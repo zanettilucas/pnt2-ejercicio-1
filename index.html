@@ -6,13 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Ejemplo 4</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
 </head>
 
 <div id="app">
-    <input type="text" class="form-control" v-model="criterioDeBusqueda" placeholder="Ingresar un criterio de busqueda...">
+    <input type="text" class="form-control" v-model="buscoNombre" placeholder="Ingresar un criterio de busqueda...">
+    <input type="text" class="form-control" v-model="buscoDni" placeholder="Ingresar un dni">
+    <span class="badge badge-info" v-if="caracteresMin >= 1">falta para la busqueda: {{caracteresMin}}</span>
     <br>
     <div class="card-deck">
         <div class="card" v-for="persona in personasFiltradas">
@@ -32,21 +34,33 @@
     new Vue({
         el: '#app',
         data: {
-            criterioDeBusqueda: '',
+            charMin: 3,
+            buscoNombre: '',
+            buscoDni: '',
             //Aquí, en este array es donde tienen que agregar su información
             personas:
                 [
                     { nombre: 'Gaspar', apellido: 'De Carlo', dni: 29502368, correo: 'gdecar@ort.edu.ar' },
-                    { nombre: 'Sofía', apellido: 'Ferragut', dni: 31227445, correo: 'sferragut@ort.edu.ar' }
+                    { nombre: 'Sofía', apellido: 'Ferragut', dni: 31227445, correo: 'sferragut@ort.edu.ar' },
+                    { nombre: 'Sofía', apellido: 'Ferragut', dni: 400, correo: 'sferragut@ort.edu.ar' },
+                    { nombre: 'Sofía', apellido: 'Ferragut', dni: 400, correo: 'sferragut@ort.edu.ar' }
                 ]
         },
         computed: {
             personasFiltradas() {
                 return this.personas.filter((persona) => {
-                    let registroCompleto = `${persona.nombre}${persona.apellido}${persona.dni}${persona.correo}`
-                    return registroCompleto.toLowerCase().includes(this.criterioDeBusqueda.toLowerCase())
+                    let nombreCompleto = `${persona.nombre}${persona.apellido}`
+                    let tengoNombre = nombreCompleto.toLowerCase().includes(this.buscoNombre.toLowerCase())
+                    let tengoDni = `${persona.dni}`.includes(this.buscoDni)
+                    return (tengoNombre && tengoDni)
                 });
-            }
+            },
+            caracteresMin(){
+                let cantNombre = this.charMin - this.buscoNombre.length
+                let cantDni = this.charMin - this.buscoDni.length
+                
+                return cantNombre < cantDni ? cantNombre : cantDni
+            },
         },
         methods: {
             getNombreCompleto(persona) {
